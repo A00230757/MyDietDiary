@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="300dp"
+    android:orientation="vertical"
+    tools:context="com.example.app.mydietdiary.com.example.harpreet.dietdiary.AddFoodItemDialogActivity">
+
+    <TextView
+        android:gravity="center"
+        android:textColor="#ffa500"
+        android:textSize="30dp"
+        android:text="Add New Food Item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="FoodItem Name"
+        android:layout_width="match_parent"
+        android:textColor="#000000"
+        android:layout_margin="5dp"
+        android:textStyle="bold"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:hint="enter item name"
+        android:id="@+id/et_fn"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="DefaultType"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/et_dn"
+        android:hint="enter default type"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:orientation="horizontal"
+        android:weightSum="10">
+
+        <Button
+            android:onClick="add"
+            android:text="Add"
+            android:textColor="#000000"
+            android:background="#ffffff"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:layout_weight="4"
+
+            android:textSize="25dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"/>
+        <Button
+            android:onClick="cancel"
+            android:text="Cancel"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:background="#ffffff"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+
+            android:textSize="25dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
