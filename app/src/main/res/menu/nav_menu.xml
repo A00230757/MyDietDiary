@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:icon="@drawable/roundedbutton"
+        android:title="Home"
+        android:id="@+id/ih"
+        />
+    <item
+        android:icon="@drawable/roundedbutton"
+        android:title="Diet History"
+        android:id="@+id/i5"
+        />
+    <item
+        android:icon="@drawable/roundedbutton"
+        android:title="Manage Nutrients"
+        android:id="@+id/i1"
+        />
+    <item
+        android:icon="@drawable/roundedbutton"
+        android:title="Manage Food Items"
+        android:id="@+id/i2"
+        />
+    <item
+        android:icon="@drawable/roundedbutton"
+        android:title="Manage FoodItem Nutrients"
+        android:id="@+id/i3"
+        />
+    <item
+        android:icon="@drawable/roundedbutton"
+        android:title="Add Diet"
+        android:id="@+id/i4"
+        />
+    <item
+        android:icon="@drawable/roundedbutton"
+        android:title="Share"
+        android:id="@+id/i6"
+        />
+
+
+
+</menu>

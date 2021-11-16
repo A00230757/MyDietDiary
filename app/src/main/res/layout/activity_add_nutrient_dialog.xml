@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="250dp"
+    android:orientation="vertical"
+    tools:context="com.example.app.mydietdiary.com.example.harpreet.dietdiary.AddNutrientActivity">
+    <TextView
+        android:gravity="center"
+        android:textColor="#ffa500"
+        android:textSize="30dp"
+        android:text="Add New Nutrient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:layout_margin="5dp"
+            android:text="Name"
+            />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:hint="enter nutrient name"
+            android:id="@+id/et1"
+            />
+
+
+    <TextView
+        android:text="Select Unit"
+        android:textColor="#000000"
+        android:layout_margin="5dp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <RadioGroup
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        android:id="@+id/rg1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:checked="false"
+            android:id="@+id/rb1"
+            android:text="cal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:checked="false"
+            android:text="g"
+            android:id="@+id/rb2"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:checked="false"
+            android:text="mg"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/rb3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="10">
+    <Button
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:textStyle="bold"
+        android:background="#ffffff"
+        android:textColor="#000000"
+        android:layout_gravity="center"
+        android:onClick="add"
+        android:textSize="25dp"
+        />
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"/>
+    <Button
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:background="#ffffff"
+        android:textColor="#000000"
+        android:layout_gravity="center"
+        android:onClick="cancel"
+        android:textSize="25dp"
+        />
+</LinearLayout>
+
+</LinearLayout>

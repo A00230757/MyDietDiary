@@ -1,0 +1,58 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.amrinder.vmmmaterialdesigndemos.MyTabbedActivity">
+
+   
+    <!--<item-->
+        <!--android:id="@+id/m1"-->
+        <!--android:orderInCategory="101"-->
+        <!--android:title="Menu 1"-->
+        <!--app:showAsAction="ifRoom"-->
+        <!--android:icon="@drawable/renew"/>-->
+
+    <!--<item-->
+        <!--android:id="@+id/m2"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:icon="@drawable/key"-->
+        <!--android:title="Menu 2"-->
+        <!--app:showAsAction="ifRoom" />-->
+
+    <!--<item-->
+        <!--android:id="@+id/action_settings"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/action_settings"-->
+        <!--app:showAsAction="never" />-->
+    <item
+        android:id="@+id/m6"
+        android:icon="@drawable/sh"
+        android:orderInCategory="101"
+        android:title="Share"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/m5"
+        android:icon="@drawable/etx"
+        android:orderInCategory="100"
+        android:title="Export"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/m4"
+        android:orderInCategory="100"
+        android:title="Help"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/m2"
+        android:orderInCategory="100"
+        android:title="Delete DietHistory"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/m3"
+        android:orderInCategory="100"
+        android:title="Reset App"
+        app:showAsAction="never" />
+
+
+
+
+</menu>
