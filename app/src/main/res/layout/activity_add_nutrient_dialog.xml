@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="300dp"
     android:layout_height="250dp"
-    android:orientation="vertical"
-    tools:context="com.example.app.mydietdiary.com.example.harpreet.dietdiary.AddNutrientActivity">
+    android:orientation="vertical">
     <TextView
         android:gravity="center"
         android:textColor="#ffa500"

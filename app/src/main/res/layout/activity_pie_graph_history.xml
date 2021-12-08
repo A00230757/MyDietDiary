@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/d1"
+    android:background="#d3d3d3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="10"
+        android:orientation="vertical"
+        tools:context="com.example.app.mydietdiary.com.example.harpreet.dietdiary.PieGraphHistoryActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:layout_height="0dp">
+        <Button
+            android:onClick="specifichistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1.4"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:background="#ffffff"
+            android:text="Specific Date\nNutrient History" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2"/>
+        <Button
+            android:onClick="overallhistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1.4"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:background="#ffffff"
+            android:text="Overall\nNutrient History" />
+    </LinearLayout>
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:textStyle="bold"
+    android:id="@+id/tv1"
+    android:textSize="15dp"
+    android:layout_weight="0.5"
+    />
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/piechart"
+            android:layout_width="match_parent"
+            android:layout_weight="8.5"
+            android:layout_height="0dp"/>
+</LinearLayout>
+
+<android.support.design.widget.NavigationView
+android:id="@+id/nav1"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:layout_gravity="start"
+app:headerLayout="@layout/header_layout"
+app:menu="@menu/nav_menu">
+
+
+</android.support.design.widget.NavigationView>
+
+
+    </android.support.v4.widget.DrawerLayout>

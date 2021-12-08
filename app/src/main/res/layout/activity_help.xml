@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/d1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#ffa500"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.example.app.mydietdiary.com.example.harpreet.dietdiary.HelpActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:textStyle="italic"
+            android:textSize="15dp"
+            android:textColor="#000000"
+            android:text="How To use App\n\nstep1.Manage Nutrients\n\nAdd nutrients like Carbohydrate(choose units cal),Protein(choose units g),Fat(choose g or mg) or others like vitamins etc. \n\nYou can later udpate data.\n\nstep2.Manage FoodItems\n\nAdd food items like banana ,fish ,milk with there default types like fruit ,seafood,drink respectively.You can update later also.\n\nstep3.Manage FoodItem Nutrients\n\nFirst select a food item then see already added nutrients in selected fooditem.\n\n if no any record found add new nutrient in food item by clicking on add button. Now add calorie quantity present in per unit of nutrient. \n\nLike 4 calories per unit carbohydrate,9 calories per unit fat,4 calories per unit protein,9 calories per unit vitamin ,4 units per unit minerals etc .Later you can update also.\n\nstep4. Add Diet\n First of all select diettype then type something in edit text on next screen, here added fooditems will appear .\n\n if you have not added yet first alert dialogs appear. Then click on fetch nutrients buttton if nutrients under this item exist will appear.\n\nnow per unit values appear if you want to change you can change. On click of save diet added successfully with current time and date automatically.\n\n Home screen show today's diet . You can see diet history by selecting a particular date in Diet History side."
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
+
+</LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header_layout"
+        app:menu="@menu/nav_menu">
+
+
+    </android.support.design.widget.NavigationView>
+
+
+</android.support.v4.widget.DrawerLayout>

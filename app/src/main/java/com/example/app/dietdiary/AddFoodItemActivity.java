@@ -4,18 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,7 +14,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.app.mydietdiary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -35,11 +42,14 @@ public class AddFoodItemActivity extends AppCompatActivity {
     RecyclerView rcv;
     AlertDialog.Builder ad;
     FloatingActionButton fab1;
-    //MyRecyclerAdapter myad;
+    MyRecyclerAdapter myad;
     SQLiteDatabase db = null;
     NavigationView nav1;
     DrawerLayout d1;
     ActionBarDrawerToggle actionBarDrawerToggle;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference mainreffooditems;
+    DatabaseReference fooditemsref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +58,9 @@ public class AddFoodItemActivity extends AppCompatActivity {
         nav1 = (NavigationView) (findViewById(R.id.nav1));
         d1 = (DrawerLayout) (findViewById(R.id.d1));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        firebaseDatabase = FirebaseDatabase.getInstance(new firebase_cloud().getLink());
+        mainreffooditems = firebaseDatabase.getReference();
+        fooditemsref =mainreffooditems.child("fooditems");
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, d1, null, 0, 0);
         d1.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
@@ -108,8 +120,8 @@ public class AddFoodItemActivity extends AppCompatActivity {
         fab1 = (FloatingActionButton) (findViewById(R.id.fab1));
         db = openOrCreateDatabase("MYDB", MODE_PRIVATE, null);
         rcv = (RecyclerView) (findViewById(R.id.rcv1));
-        //myad = new MyRecyclerAdapter();
-        //rcv.setAdapter(myad);
+        myad = new MyRecyclerAdapter();
+        rcv.setAdapter(myad);
         ad = new AlertDialog.Builder(this);
         //Specifying Layout Manager to RecyclerView is Compulsary for Proper Rendering
         LinearLayoutManager simpleverticallayout = new LinearLayoutManager(this);
@@ -145,7 +157,34 @@ public class AddFoodItemActivity extends AppCompatActivity {
         return true;
     }
     private void initiallogic() {
-        if (checkForTableExists(db, "fooditems")) {
+
+
+        al.clear();
+        fooditemsref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                al.clear();
+                //Log.d("MYESSAGE",dataSnapshot.toString());
+                for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                {
+                    FoodItem nutrienttemp = singlesnapshot.getValue(FoodItem.class);
+                    try {
+                        al.add(nutrienttemp);
+
+                    }
+                    catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+
+                }
+                myad.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+   /*     if (checkForTableExists(db, "fooditems")) {
             al.clear();
             Cursor c = db.rawQuery("select * from fooditems", null);
             int count = 0;
@@ -164,7 +203,7 @@ public class AddFoodItemActivity extends AppCompatActivity {
         } else {
             db.execSQL("create table if not exists fooditems (foodid INTEGER PRIMARY KEY AUTOINCREMENT,fname VARCHAR(1000),dname VARCHAR(1000),icon INTEGER)");
 
-        }
+        }*/
     }
 
     private boolean checkForTableExists(SQLiteDatabase db, String table) {
@@ -177,90 +216,103 @@ public class AddFoodItemActivity extends AppCompatActivity {
         return false;
     }
 
-//    class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> {
-//        class MyViewHolder extends RecyclerView.ViewHolder {
-//            CardView singlecardview;
-//
-//            public MyViewHolder(CardView itemView) {
-//                super(itemView);
-//                singlecardview = (itemView);
-//            }
-//        }
-//
-//        @Override
-//        public MyRecyclerAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-//            View viewthatcontainscardview = inflater.inflate(R.layout.cardviewdesign, parent, false);
-//            CardView cardView = (CardView) (viewthatcontainscardview.findViewById(R.id.cardview1));
-//            Log.d("MYMESSAGE", "On CreateView Holder Done");
-//            return new MyViewHolder(cardView);
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(MyRecyclerAdapter.MyViewHolder holder, final int position) {
-//            CardView localcardview = holder.singlecardview;
-//            localcardview.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    //Toast.makeText(getApplicationContext(), position + " clicked", Toast.LENGTH_LONG).show();
-//                }
-//            });
-//            TextView tv1, tv2;
-//            ImageView imv1,imv2;
-//            tv1 = (TextView) (localcardview.findViewById(R.id.tv111));
-//            tv2 = (TextView) (localcardview.findViewById(R.id.tv222));
-//            imv1 = (ImageView) (localcardview.findViewById(R.id.imv1));
-//            imv2 = (ImageView) (localcardview.findViewById(R.id.imv2));
-//            final FoodItem fi = al.get(position);
-//            tv1.setText( fi.name);
-//            tv2.setText("("+fi.defaultname+")");
-//           imv1.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent in = new Intent(getApplicationContext(), DialogActivity.class);
-//                    in.putExtra("fname", fi.name);
-//                    in.putExtra("dname", fi.defaultname);
-//                    in.putExtra("fid", fi.foodid);
-//                    startActivityForResult(in, 10);
-//                }
-//            });
-//            imv2.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            final int fid = fi.foodid;
-//                            ad.setTitle("Alert");
-//                            ad.setIcon(R.drawable.ic_launcher_background);
-//                            ad.setMessage("Do you really want to delete?");
-//                            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    db.execSQL("delete from fooditems where foodid=" + fid + "");
-//                                    Toast.makeText(getApplication(), "deleted successfully", Toast.LENGTH_SHORT).show();
-//                                    al.remove(position);
-//                                    myad.notifyDataSetChanged();
-//                                }
-//                            });
-//                            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                }
-//                            });
-//                            ad.create();
-//                            ad.show();
-//                        }
-//                    });
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return al.size();
-//        }
-//    }
+    class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> {
+        class MyViewHolder extends RecyclerView.ViewHolder {
+            CardView singlecardview;
+
+            public MyViewHolder(CardView itemView) {
+                super(itemView);
+                singlecardview = (itemView);
+            }
+        }
+
+        @Override
+        public MyRecyclerAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View viewthatcontainscardview = inflater.inflate(R.layout.cardviewdesign, parent, false);
+            CardView cardView = (CardView) (viewthatcontainscardview.findViewById(R.id.cardview1));
+            Log.d("MYMESSAGE", "On CreateView Holder Done");
+            return new MyViewHolder(cardView);
+        }
+
+        @Override
+        public void onBindViewHolder(MyRecyclerAdapter.MyViewHolder holder, final int position) {
+            CardView localcardview = holder.singlecardview;
+            localcardview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Toast.makeText(getApplicationContext(), position + " clicked", Toast.LENGTH_LONG).show();
+                }
+            });
+            TextView tv1, tv2;
+            ImageView imv1,imv2;
+            tv1 = (TextView) (localcardview.findViewById(R.id.tv111));
+            tv2 = (TextView) (localcardview.findViewById(R.id.tv222));
+            imv1 = (ImageView) (localcardview.findViewById(R.id.imv1));
+            imv2 = (ImageView) (localcardview.findViewById(R.id.imv2));
+            final FoodItem fi = al.get(position);
+            tv1.setText( fi.name);
+            tv2.setText("("+fi.defaultname+")");
+           imv1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent in = new Intent(getApplicationContext(), DialogActivity.class);
+                    in.putExtra("fname", fi.name);
+                    in.putExtra("dname", fi.defaultname);
+                    in.putExtra("fid", fi.foodid);
+                    startActivityForResult(in, 10);
+                }
+            });
+            imv2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final int fid = fi.foodid;
+                            ad.setTitle("Alert");
+                            ad.setIcon(R.drawable.ic_launcher_background);
+                            ad.setMessage("Do you really want to delete?");
+                            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    /*db.execSQL("delete from fooditems where foodid=" + fid + "");*/
+
+
+                                    fooditemsref.child(fi.name).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            for (DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+                                                singleSnapshot.getRef().removeValue();
+                                                initiallogic();
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                        }
+                                    });                                    Toast.makeText(getApplication(), "deleted successfully", Toast.LENGTH_SHORT).show();
+                                    al.remove(position);
+                                    myad.notifyDataSetChanged();
+                                }
+                            });
+                            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+                            ad.create();
+                            ad.show();
+                        }
+                    });
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return al.size();
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -4,18 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,7 +14,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.app.mydietdiary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -34,11 +41,14 @@ public class AddNutrientActivity extends AppCompatActivity {
     RecyclerView rcv;
     AlertDialog.Builder ad;
     FloatingActionButton fab1;
-    //MyRecyclerAdapter myad;
+    MyRecyclerAdapter myad;
     SQLiteDatabase db=null;
     NavigationView nav1;
     DrawerLayout d1;
     ActionBarDrawerToggle actionBarDrawerToggle;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference mainrefnutrients;
+    DatabaseReference nutrientsref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +57,9 @@ public class AddNutrientActivity extends AppCompatActivity {
         nav1 = (NavigationView) (findViewById(R.id.nav1));
         d1 = (DrawerLayout) (findViewById(R.id.d1));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        firebaseDatabase = FirebaseDatabase.getInstance(new firebase_cloud().getLink());
+        mainrefnutrients = firebaseDatabase.getReference();
+        nutrientsref =mainrefnutrients.child("nutrients");
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, d1, null, 0, 0);
         d1.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
@@ -122,15 +134,15 @@ public class AddNutrientActivity extends AppCompatActivity {
 
         rcv = (RecyclerView) (findViewById(R.id.rcv1));
 
-        //myad = new MyRecyclerAdapter();
+        myad = new MyRecyclerAdapter();
 
-       // rcv.setAdapter(myad);
+       rcv.setAdapter(myad);
         ad = new AlertDialog.Builder(this);
         //Specifying Layout Manager to RecyclerView is Compulsary for Proper Rendering
         LinearLayoutManager simpleverticallayout = new LinearLayoutManager(this);
         rcv.setLayoutManager(simpleverticallayout);
-//        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
-//        rcv.setLayoutManager(gridLayoutManager);
+       // GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
+       // rcv.setLayoutManager(gridLayoutManager);
 
 
         initiallogic();
@@ -153,27 +165,52 @@ public class AddNutrientActivity extends AppCompatActivity {
     }
 
     private void initiallogic() {
-        if(checkForTableExists(db,"nutrients"))
-        {
-al.clear();
-int count=0;
-            Cursor c = db.rawQuery("select * from nutrients", null);
-            while (c.moveToNext()) {
-                count=count+1;
-                String nut = c.getString(c.getColumnIndex("nutrient"));
-                String unit= c.getString(c.getColumnIndex("unit"));
-                al.add(new nutrients(nut,unit));
+        al.clear();
+        nutrientsref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                al.clear();
+                //Log.d("MYESSAGE",dataSnapshot.toString());
+                for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                {
+                    nutrients nutrienttemp = singlesnapshot.getValue(nutrients.class);
+                    try {
+                            al.add(nutrienttemp);
+
+                    }
+                    catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+
+                }
+                myad.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
-        //myad.notifyDataSetChanged();
-            if(count==0){
-                Toast.makeText(getApplicationContext(),"no any nutrient present click on add button to add new",Toast.LENGTH_SHORT).show();
-            }
-        }
-        else {
-
-            db.execSQL("create table if not exists nutrients (nutrient VARCHAR(1000) PRIMARY KEY,unit VARCHAR(1000))");
-        }
+        });
+//        if(checkForTableExists(db,"nutrients"))
+//        {
+//al.clear();
+//int count=0;
+//            Cursor c = db.rawQuery("select * from nutrients", null);
+//            while (c.moveToNext()) {
+//                count=count+1;
+//                String nut = c.getString(c.getColumnIndex("nutrient"));
+//                String unit= c.getString(c.getColumnIndex("unit"));
+//                al.add(new nutrients(nut,unit));
+//
+//            }
+//        myad.notifyDataSetChanged();
+//            if(count==0){
+//                Toast.makeText(getApplicationContext(),"no any nutrient present click on add button to add new",Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//        else {
+//
+//            db.execSQL("create table if not exists nutrients (nutrient VARCHAR(1000) PRIMARY KEY,unit VARCHAR(1000))");
+//        }
     }
 
     private boolean checkForTableExists(SQLiteDatabase db, String table){
@@ -190,106 +227,119 @@ int count=0;
 
     /////// Inner Class  ////////
     // Create ur own RecyclerAdapter
-//    class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> {
-//
-//        // Define ur own View Holder (Refers to Single Row)
-//        class MyViewHolder extends RecyclerView.ViewHolder {
-//            CardView singlecardview;
-//
-//            // We have Changed View (which represent single row) to CardView in whole code
-//            public MyViewHolder(CardView itemView) {
-//                super(itemView);
-//                singlecardview = (itemView);
-//            }
-//        }
-//
-//        // Inflate ur Single Row / CardView from XML here
-//        @Override
-//        public MyRecyclerAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-//
-//            View viewthatcontainscardview = inflater.inflate(R.layout.cardviewnutrients, parent, false);
-//
-//            CardView cardView = (CardView) (viewthatcontainscardview.findViewById(R.id.cardview1));
-//
-//            // This will call Constructor of MyViewHolder, which will further copy its reference
-//            // to customview (instance variable name) to make its usable in all other methods of class
-//            Log.d("MYMESSAGE", "On CreateView Holder Done");
-//            return new MyViewHolder(cardView);
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(MyRecyclerAdapter.MyViewHolder holder, final int position) {
-//
-//            CardView localcardview = holder.singlecardview;
-//
-//            localcardview.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                   // Toast.makeText(getApplicationContext(), position + " clicked", Toast.LENGTH_LONG).show();
-//                }
-//            });
-//
-//            TextView tv1, tv2;
-//            ImageView imv1;
-//           // Button btdelete;
-//            tv1 = (TextView) (localcardview.findViewById(R.id.tv111));
-//            tv2 = (TextView) (localcardview.findViewById(R.id.tv222));
-//          imv1 = (ImageView) (localcardview.findViewById(R.id.imv1));
-//           // btdelete=(Button)(localcardview.findViewById(R.id.btdelete)) ;
-//
-//            final nutrients ni = al.get(position);
-//
-//            tv1.setText(ni.name);
-//            tv2.setText("Unit : " + ni.unit);
-//            // Picasso.with(getApplicationContext()).load(st.photo).resize(200, 100).into(imv1);
-//
-//            imv1.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            final String nn=ni.name;
-//
-//                            ad.setTitle("Alert");
-//                            ad.setIcon(R.drawable.ic_launcher_background);
-//                            ad.setMessage("Do you really want to delete?");
-//                            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    db.execSQL("delete from nutrients where nutrient='"+nn+"'");
-//                                    Toast.makeText(getApplication(),"deleted successfully",Toast.LENGTH_SHORT).show();
-//                                    al.remove(position);
-//                                    myad.notifyDataSetChanged();
-//                                }
-//                            });
-//
-//                            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//
-//                                }
-//                            });
-//
-//                            ad.create();
-//                            ad.show();
-//                        }
-//                    });
-//
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//
-//            return al.size();
-//        }
-//
-//
-//    }
+    class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> {
+
+        // Define ur own View Holder (Refers to Single Row)
+        class MyViewHolder extends RecyclerView.ViewHolder {
+            CardView singlecardview;
+
+            // We have Changed View (which represent single row) to CardView in whole code
+            public MyViewHolder(CardView itemView) {
+                super(itemView);
+                singlecardview = (itemView);
+            }
+        }
+
+        // Inflate ur Single Row / CardView from XML here
+        @Override
+        public MyRecyclerAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+            View viewthatcontainscardview = inflater.inflate(R.layout.cardviewnutrients, parent, false);
+
+            CardView cardView = (CardView) (viewthatcontainscardview.findViewById(R.id.cardview1));
+
+            // This will call Constructor of MyViewHolder, which will further copy its reference
+            // to customview (instance variable name) to make its usable in all other methods of class
+            Log.d("MYMESSAGE", "On CreateView Holder Done");
+            return new MyViewHolder(cardView);
+        }
+
+        @Override
+        public void onBindViewHolder(MyRecyclerAdapter.MyViewHolder holder, final int position) {
+
+            CardView localcardview = holder.singlecardview;
+
+            localcardview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                   // Toast.makeText(getApplicationContext(), position + " clicked", Toast.LENGTH_LONG).show();
+                }
+            });
+
+            TextView tv1, tv2;
+            ImageView imv1;
+           // Button btdelete;
+            tv1 = (TextView) (localcardview.findViewById(R.id.tv111));
+            tv2 = (TextView) (localcardview.findViewById(R.id.tv222));
+          imv1 = (ImageView) (localcardview.findViewById(R.id.imv1));
+           // btdelete=(Button)(localcardview.findViewById(R.id.btdelete)) ;
+
+            final nutrients ni = al.get(position);
+
+            tv1.setText(ni.name);
+            tv2.setText("Unit : " + ni.unit);
+            // Picasso.with(getApplicationContext()).load(st.photo).resize(200, 100).into(imv1);
+
+            imv1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final String nn=ni.name;
+
+                            ad.setTitle("Alert");
+                            ad.setIcon(R.drawable.ic_launcher_background);
+                            ad.setMessage("Do you really want to delete?");
+                            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //db.execSQL("delete from nutrients where nutrient='"+nn+"'");
+                                    nutrientsref.child(nn).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            for (DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+                                                singleSnapshot.getRef().removeValue();
+                                                initiallogic();
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                        }
+                                    });
+                                    Toast.makeText(getApplication(),"deleted successfully",Toast.LENGTH_SHORT).show();
+                                    al.remove(position);
+                                    myad.notifyDataSetChanged();
+                                }
+                            });
+
+                            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+
+                            ad.create();
+                            ad.show();
+                        }
+                    });
+
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+
+            return al.size();
+        }
+
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
