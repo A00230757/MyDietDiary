@@ -1,14 +1,16 @@
 package com.example.app.dietdiary;
 
-/**
- * Created by Harpreet on 9/17/2018.
- */
 
 public class diet {
-    int dietid;
-    String diettype;
-    long date;
-    public diet(int dietid,String diettype,long date){
+   public  String dietid;
+   public  String diettype;
+   public  long date;
+    public  diet(){
+       dietid = dietid;
+       diettype= diettype;
+       date=date;
+    }
+    public diet(String dietid,String diettype,long date){
         this.dietid=dietid;
         this.diettype=diettype;
         this.date=date;

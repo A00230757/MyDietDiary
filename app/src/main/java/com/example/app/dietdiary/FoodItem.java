@@ -14,10 +14,7 @@ public int foodid;
         defaultname=defaultname;
         photo = photo;
     }
-//    public FoodItem()
-//    {
-//
-//    }
+
     public FoodItem(int foodid,String name,String defaultname,int photo) {
 this.foodid=foodid;
         this.name = name;

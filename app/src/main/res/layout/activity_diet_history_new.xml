@@ -1,4 +1,4 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/d1"
     android:layout_width="match_parent"
@@ -99,7 +99,7 @@
 
         </RadioGroup>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcv1"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
@@ -128,7 +128,7 @@
                 android:textSize="25dp"
                 android:text="Total Calories :"
                 android:textStyle="bold" />
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab1"
                 android:src="@drawable/plus"
                 app:fabSize="mini"
@@ -141,7 +141,7 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.NavigationView
+    <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -150,7 +150,7 @@
         app:menu="@menu/nav_menu">
 
 
-    </android.support.design.widget.NavigationView>
+    </com.google.android.material.navigation.NavigationView>
 
 
-</android.support.v4.widget.DrawerLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

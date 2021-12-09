@@ -1,17 +1,25 @@
 package com.example.app.dietdiary;
 
-/**
- * Created by Harpreet on 9/17/2018.
- */
+
 
 public class diethistory {
-    String fooditem;
-    String diettype;
-    float calories;
-    int count;
-    String currenttime;
-    int dietid;
-    public diethistory(String fooditem,String diettype,Float calories,int count,String currenttime,int dietid){
+   public String fooditem;
+    public String diettype;
+    public float calories;
+    public int count;
+    public String currenttime;
+    public String dietid;
+
+    public diethistory(){
+        fooditem=fooditem;
+        diettype=diettype;
+        calories=calories;
+        count=count;
+        currenttime=currenttime;
+        dietid=dietid;
+    }
+
+    public diethistory(String fooditem,String diettype,Float calories,int count,String currenttime,String dietid){
         this.fooditem=fooditem;
         this.diettype=diettype;
         this.calories=calories;
@@ -19,7 +27,5 @@ public class diethistory {
         this.currenttime=currenttime;
         this.dietid=dietid;
     }
-    {
 
-    }
 }

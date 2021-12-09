@@ -87,16 +87,16 @@ public class AddNutrientActivity extends AppCompatActivity {
 
                 }
 
-//                else if (item.getItemId() == R.id.i4){
-//                    Intent in = new Intent(AddNutrientActivity.this, AddDietFirstActivity.class);
-//                    startActivity(in);
-//                    //Toast.makeText(MainActivity.this, "Task4", Toast.LENGTH_SHORT).show();
-//
-//                }
-//                else if(item.getItemId() == R.id.i5){
-//                    Intent in = new Intent(AddNutrientActivity.this, DietHistoryNewActivity.class);
-//                    startActivity(in);
-//                }
+                else if (item.getItemId() == R.id.i4){
+                    Intent in = new Intent(AddNutrientActivity.this, AddDietFirstActivity.class);
+                    startActivity(in);
+                    //Toast.makeText(MainActivity.this, "Task4", Toast.LENGTH_SHORT).show();
+
+                }
+                else if(item.getItemId() == R.id.i5){
+                    Intent in = new Intent(AddNutrientActivity.this, DietHistoryNewActivity.class);
+                    startActivity(in);
+                }
                 else if(item.getItemId() == R.id.i6){
                     String message = "Whether you're trying to lose weight or just attempting to eat healthier, Download a DietDiary App(keeping calorie records)  can help you make positive changes. ";
                     Intent share = new Intent(Intent.ACTION_SEND);

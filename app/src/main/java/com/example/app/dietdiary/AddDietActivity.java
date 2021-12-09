@@ -6,13 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -26,7 +19,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.example.app.mydietdiary.R;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,6 +56,15 @@ String diettype="";
     NavigationView nav1;
     DrawerLayout d1;
     ActionBarDrawerToggle actionBarDrawerToggle;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference mainreffooditems;
+    DatabaseReference fooditemsref;
+    DatabaseReference mainreffooditemdetail;
+    DatabaseReference fooditemsdetailref;
+    DatabaseReference mainrefdiet;
+    DatabaseReference dietref;
+    DatabaseReference mainrefdietdetail;
+    DatabaseReference dietdetailref;
     long sd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +78,15 @@ String diettype="";
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, d1, null, 0, 0);
         d1.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-
+        firebaseDatabase = FirebaseDatabase.getInstance(new firebase_cloud().getLink());
+        mainreffooditems = firebaseDatabase.getReference();
+        fooditemsref =mainreffooditems.child("fooditems");
+        mainreffooditemdetail = firebaseDatabase.getReference();
+        fooditemsdetailref =mainreffooditemdetail.child("fooditemsdetail");
+        mainrefdiet = firebaseDatabase.getReference();
+        dietref =mainrefdiet.child("diet");
+        mainrefdietdetail = firebaseDatabase.getReference();
+        dietdetailref =mainrefdietdetail.child("dietdetail");
 
         nav1.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -172,9 +195,11 @@ public void search(View view)
 {
     selectedfin = auto.getText().toString();
     //Toast.makeText(getApplication(),selectedfin,Toast.LENGTH_LONG).show();
+
     for(int i=0;i<alfi.size();i++){
         if(selectedfin.equals(alfi.get(i).name)){
             selectedfid=alfi.get(i).foodid;
+            Log.d("MMMM","yes");
             fetchnutrients();
             break;
         }
@@ -198,34 +223,61 @@ public void chkdataoffitems() {
 
     }
     private void fetchfooditems() {
-        if(checkForTableExists(db,"fooditems"))
-        {
-            al.clear();
-            alfi.clear();
-            int count=0;
-            Cursor c = db.rawQuery("select * from fooditems", null);
-            while (c.moveToNext()) {
-                count=count+1;
-                int icon = c.getInt(c.getColumnIndex("icon"));
-                int foodid = c.getInt(c.getColumnIndex("foodid"));
-                String fname = c.getString(c.getColumnIndex("fname"));
-                String dname = c.getString(c.getColumnIndex("dname"));
-                alfi.add(new FoodItem(foodid,fname,dname,icon));
-                al.add(fname);
+        fooditemsref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                al.clear();
+                alfi.clear();
+                //Log.d("MYESSAGE",dataSnapshot.toString());
+                for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                {
+                    FoodItem nutrienttemp = singlesnapshot.getValue(FoodItem.class);
+                    try {
+
+                        alfi.add(nutrienttemp);
+                        al.add(nutrienttemp.name);
+
+                    }
+                    catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+
+                }
+                ad.notifyDataSetChanged();
             }
-            ad.notifyDataSetChanged();
-            if(count==0){
-                alert1.show();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
-            else{
-                chkdataoffitems();
-            }
-        }
-        else {
-         alert1.show();
-
-        }
+        });
+//        if(checkForTableExists(db,"fooditems"))
+//        {
+//            al.clear();
+//            alfi.clear();
+//            int count=0;
+//            Cursor c = db.rawQuery("select * from fooditems", null);
+//            while (c.moveToNext()) {
+//                count=count+1;
+//                int icon = c.getInt(c.getColumnIndex("icon"));
+//                int foodid = c.getInt(c.getColumnIndex("foodid"));
+//                String fname = c.getString(c.getColumnIndex("fname"));
+//                String dname = c.getString(c.getColumnIndex("dname"));
+//                alfi.add(new FoodItem(foodid,fname,dname,icon));
+//                al.add(fname);
+//            }
+//            ad.notifyDataSetChanged();
+//            if(count==0){
+//                alert1.show();
+//
+//            }
+//            else{
+//                chkdataoffitems();
+//            }
+//        }
+//        else {
+//         alert1.show();
+//
+//        }
     }
     private boolean checkForTableExists(SQLiteDatabase db, String table){
         String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='"+table+"'";
@@ -238,61 +290,120 @@ public void chkdataoffitems() {
     }
 
     public void fetchnutrients(){
-        if(checkForTableExists(db,"fooditemsdetail"))
-        {
-          alfid.clear();
-          nutrientLinearlayout.removeAllViews();
-          int count=0;
-            Cursor c = db.rawQuery("select * from fooditemsdetail where foodid="+selectedfid+"", null);
-            while (c.moveToNext()) {
-                count=count+1;
-                int fooddetailid = c.getInt(c.getColumnIndex("fooddetailid"));
-                int foodid = c.getInt(c.getColumnIndex("foodid"));
-                String nutrition = c.getString(c.getColumnIndex("nutrition"));
-                String unit = c.getString(c.getColumnIndex("unit"));
-                float quantity = c.getFloat(c.getColumnIndex("quantity"));
-                alfid.add(new FoodItemDetail(fooddetailid,foodid,nutrition,unit,quantity));
+        fooditemsdetailref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                alfid.clear();
+                nutrientLinearlayout.removeAllViews();
+                int count=0;
+                //Log.d("MYESSAGE",dataSnapshot.toString());
+                for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                {
+                    FoodItemDetail nutrienttemp = singlesnapshot.getValue(FoodItemDetail.class);
+                    try {
+                        count=count+1;
+                        alfid.add(nutrienttemp);
 
-            }
-            if(count==0){
-                alert1.show();
-            }
-           else  if(alfid.size()>0){
-                android.view.Display display = ((android.view.WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                for (int m = 0; m < alfid.size(); m++) {
-                    Log.d("TEST",m+"");
-                    final TextView textView = new TextView(getApplicationContext());
-                    final EditText editText=new EditText(getApplicationContext());
-                    textView.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth(), 90));
-                    textView.setPadding(5, 0, 5, 0);
-                    textView.setGravity(Gravity.BOTTOM);
-                    textView.setTextSize(25);
-                    textView.setText(alfid.get(m).nutritionname+"("+alfid.get(m).unit+")");
-                    textView.setTextColor(Color.BLACK);
-                    altv.add(textView);
-                    editText.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth(), 150));
-                    editText.setHint("enter calorie quantiy");
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    editText.setText(alfid.get(m).quantity+"");
-                    alet.add( editText);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            nutrientLinearlayout.addView(textView);
-                            nutrientLinearlayout.addView(editText);
-                        }
-                    });
+                    }
+                    catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+
                 }
-            }
-            else{
-                Toast.makeText(AddDietActivity.this,"Add Nutrients in food items",Toast.LENGTH_SHORT).show();
-            }
+                if(count==0){
+                    alert1.show();
+                }
+                else  if(alfid.size()>0){
+                    android.view.Display display = ((android.view.WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    for (int m = 0; m < alfid.size(); m++) {
+                        Log.d("TEST",m+"");
+                        final TextView textView = new TextView(getApplicationContext());
+                        final EditText editText=new EditText(getApplicationContext());
+                        textView.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth(), 90));
+                        textView.setPadding(5, 0, 5, 0);
+                        textView.setGravity(Gravity.BOTTOM);
+                        textView.setTextSize(25);
+                        textView.setText(alfid.get(m).nutritionname+"("+alfid.get(m).unit+")");
+                        textView.setTextColor(Color.BLACK);
+                        altv.add(textView);
+                        editText.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth(), 150));
+                        editText.setHint("enter calorie quantiy");
+                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        editText.setText(alfid.get(m).quantity+"");
+                        alet.add( editText);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                nutrientLinearlayout.addView(textView);
+                                nutrientLinearlayout.addView(editText);
+                            }
+                        });
+                    }
+                }
 
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-        }
-        else {
-         alert1.show();
-                  }
+            }
+        });
+
+//        if(checkForTableExists(db,"fooditemsdetail"))
+//        {
+//          alfid.clear();
+//          nutrientLinearlayout.removeAllViews();
+//          int count=0;
+//            Cursor c = db.rawQuery("select * from fooditemsdetail where foodid="+selectedfid+"", null);
+//            while (c.moveToNext()) {
+//                count=count+1;
+//               // int fooddetailid = c.getInt(c.getColumnIndex("fooddetailid"));
+//                String foodid = "";
+//                String foodname="";
+//                String nutrition = c.getString(c.getColumnIndex("nutrition"));
+//                String unit = c.getString(c.getColumnIndex("unit"));
+//                float quantity = c.getFloat(c.getColumnIndex("quantity"));
+//                alfid.add(new FoodItemDetail(foodid,nutrition,unit,quantity,foodname));
+//
+//            }
+//            if(count==0){
+//                alert1.show();
+//            }
+//           else  if(alfid.size()>0){
+//                android.view.Display display = ((android.view.WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+//                for (int m = 0; m < alfid.size(); m++) {
+//                    Log.d("TEST",m+"");
+//                    final TextView textView = new TextView(getApplicationContext());
+//                    final EditText editText=new EditText(getApplicationContext());
+//                    textView.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth(), 90));
+//                    textView.setPadding(5, 0, 5, 0);
+//                    textView.setGravity(Gravity.BOTTOM);
+//                    textView.setTextSize(25);
+//                    textView.setText(alfid.get(m).nutritionname+"("+alfid.get(m).unit+")");
+//                    textView.setTextColor(Color.BLACK);
+//                    altv.add(textView);
+//                    editText.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth(), 150));
+//                    editText.setHint("enter calorie quantiy");
+//                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+//                    editText.setText(alfid.get(m).quantity+"");
+//                    alet.add( editText);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            nutrientLinearlayout.addView(textView);
+//                            nutrientLinearlayout.addView(editText);
+//                        }
+//                    });
+//                }
+//            }
+//            else{
+//                Toast.makeText(AddDietActivity.this,"Add Nutrients in food items",Toast.LENGTH_SHORT).show();
+//            }
+//
+//
+//        }
+//        else {
+//         alert1.show();
+//                  }
 
     }
     public void adddiet(View view) {
@@ -309,7 +420,7 @@ public void chkdataoffitems() {
             if (flag) {
 
 
-    if (checkForTableExists(db, "diet")) {
+    //if (checkForTableExists(db, "diet")) {
 //                long millis=System.currentTimeMillis();
 //                java.sql.Date date=new java.sql.Date(millis);
 //                String dt=date.toString();
@@ -337,7 +448,13 @@ public void chkdataoffitems() {
 //
 //        }
 //        }
-        db.execSQL("insert into diet (diettype,dt) values('" + diettype + "',"+timeInMilliseconds+")");
+                String currenttime1 = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
+        diet diet_object = new diet("diet"+currenttime1+timeInMilliseconds,diettype ,timeInMilliseconds );
+
+        DatabaseReference diet_reference = dietref.child("diet"+currenttime1+timeInMilliseconds);
+
+        diet_reference.setValue(diet_object);
+        //db.execSQL("insert into diet (diettype,dt) values('" + diettype + "',"+timeInMilliseconds+")");
         int dietid = 0;
         Cursor cus = db.rawQuery("select * from diet", null);
         int total=0;
@@ -348,6 +465,7 @@ public void chkdataoffitems() {
             Log.d("MYDTT",dietid+" "+total+"  "+d);
            // Toast.makeText(getApplicationContext(),"  total diettable "+total,Toast.LENGTH_SHORT).show();
         }
+
         for (int i = 0; i < altv.size(); i++) {
             String s = altv.get(i).getText().toString();
             int index1 = s.indexOf("(");
@@ -357,8 +475,15 @@ public void chkdataoffitems() {
           String test=  alet.get(i).getText().toString();
             Log.d("MYDDTT",test+"  values dietdetailtable"+total);
             String currenttime = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
+
+long newtime =d1.getTime();
+            dietdetail dietdetail_object = new dietdetail("dietdetail"+currenttime+""+i+timeInMilliseconds,"diet"+currenttime1+timeInMilliseconds,selectedfin ,nut,unit,Float.parseFloat(alet.get(i).getText().toString()),currenttime);
+
+            DatabaseReference dietdetail_reference = dietdetailref.child("dietdetail"+currenttime+""+i+timeInMilliseconds);
+
+            dietdetail_reference.setValue(dietdetail_object);
            //Toast.makeText(getApplicationContext(),test+"  values dietdetailtable",Toast.LENGTH_SHORT).show();
-            db.execSQL("insert into dietdetail (dietid,fname,nutrient,unit,quantity,currenttime,entrydate) values(" + dietid + ",'" + selectedfin + "','" + nut + "','" + unit + "'," + Float.parseFloat(alet.get(i).getText().toString()) + ",'"+currenttime+"',"+timeInMilliseconds+")");
+           // db.execSQL("insert into dietdetail (dietid,fname,nutrient,unit,quantity,currenttime,entrydate) values(" + dietid + ",'" + selectedfin + "','" + nut + "','" + unit + "'," + Float.parseFloat(alet.get(i).getText().toString()) + ",'"+currenttime+"',"+timeInMilliseconds+")");
         }
 //        Cursor c = db.rawQuery("select * from dietdetail ", null);
 //        while (c.moveToNext()) {
@@ -385,12 +510,12 @@ public void chkdataoffitems() {
             in.putExtra("sd",sd);
             startActivity(in);
         }
-    } else {
-        db.execSQL("create table if not exists diet (dietid INTEGER PRIMARY KEY AUTOINCREMENT,diettype VARCHAR(500), dt LONG)");
-        db.execSQL("create table if not exists dietdetail (dietdetailid INTEGER PRIMARY KEY AUTOINCREMENT,dietid INTEGER,fname VARCHAR(500),nutrient VARCHAR(500),unit VARCHAR(500),quantity FLOAT,currenttime VARCHER(500), entrydate LONG , FOREIGN KEY ('dietid') REFERENCES 'diet' ('dietid'))");
-        db.execSQL("insert into diet (diettype) values('" + diettype + "')");
-
-    }
+//    } else {
+//        db.execSQL("create table if not exists diet (dietid INTEGER PRIMARY KEY AUTOINCREMENT,diettype VARCHAR(500), dt LONG)");
+//        db.execSQL("create table if not exists dietdetail (dietdetailid INTEGER PRIMARY KEY AUTOINCREMENT,dietid INTEGER,fname VARCHAR(500),nutrient VARCHAR(500),unit VARCHAR(500),quantity FLOAT,currenttime VARCHER(500), entrydate LONG , FOREIGN KEY ('dietid') REFERENCES 'diet' ('dietid'))");
+//        //db.execSQL("insert into diet (diettype) values('" + diettype + "')");
+//
+//    }
 
             }
         }catch(Exception ex){

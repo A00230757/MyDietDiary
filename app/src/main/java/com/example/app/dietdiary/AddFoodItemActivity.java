@@ -87,17 +87,17 @@ public class AddFoodItemActivity extends AppCompatActivity {
                     // Toast.makeText(MainActivity.this, "Task3", Toast.LENGTH_SHORT).show();
 
                 }
-//
-//                else if (item.getItemId() == R.id.i4){
-//                    Intent in = new Intent(AddFoodItemActivity.this, AddDietFirstActivity.class);
-//                    startActivity(in);
-//                    //Toast.makeText(MainActivity.this, "Task4", Toast.LENGTH_SHORT).show();
-//
-//                }
-//                else if(item.getItemId() == R.id.i5){
-//                    Intent in = new Intent(AddFoodItemActivity.this, DietHistoryNewActivity.class);
-//                    startActivity(in);
-//                }
+
+                else if (item.getItemId() == R.id.i4){
+                    Intent in = new Intent(AddFoodItemActivity.this, AddDietFirstActivity.class);
+                    startActivity(in);
+                    //Toast.makeText(MainActivity.this, "Task4", Toast.LENGTH_SHORT).show();
+
+                }
+                else if(item.getItemId() == R.id.i5){
+                    Intent in = new Intent(AddFoodItemActivity.this, DietHistoryNewActivity.class);
+                    startActivity(in);
+                }
 
 
                 else if(item.getItemId() == R.id.i6){

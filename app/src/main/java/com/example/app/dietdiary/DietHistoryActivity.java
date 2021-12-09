@@ -7,12 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -21,12 +15,19 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.example.app.mydietdiary.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.android.material.navigation.NavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -160,7 +161,7 @@ ArrayList<Integer> alcal=new ArrayList<>();
                     int dietid = c.getInt(c.getColumnIndex("dietid"));
                     long dt= c.getLong(c.getColumnIndex("dt"));
                     String diettype= c.getString(c.getColumnIndex("diettype"));
-                    aldiet.add(new diet(dietid,diettype,dt));
+                    aldiet.add(new diet(dietid+"",diettype,dt));
                     fetchdietdetailtabledata(dietid);
                 }
                 calculatecalories();
@@ -238,7 +239,7 @@ ArrayList<Integer> alcal=new ArrayList<>();
                 String nutrient= c.getString(c.getColumnIndex("nutrient"));
                 String unit= c.getString(c.getColumnIndex("unit"));
                 String currenttime= c.getString(c.getColumnIndex("currenttime"));
-                aldietdetail.add(new dietdetail(dietdetailid,dietid,fname,nutrient,unit,quantity,currenttime));
+                aldietdetail.add(new dietdetail(dietdetailid+"",dietid+"",fname,nutrient,unit,quantity,currenttime));
 
             }
             if(count==0){
@@ -255,7 +256,7 @@ ArrayList<Integer> alcal=new ArrayList<>();
         tvh.setText("");
         for(int k=0;k<aldiet.size();k++){
             Long dt=aldiet.get(k).date;
-            int mainid=aldiet.get(k).dietid;
+            String mainid=aldiet.get(k).dietid;
             String type=aldiet.get(k).diettype;
             Date date = new Date(dt);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

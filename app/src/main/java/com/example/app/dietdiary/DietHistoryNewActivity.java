@@ -10,20 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,7 +23,21 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.app.mydietdiary.R;
+import com.google.android.material.navigation.NavigationView;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -268,7 +269,7 @@ if(sd!=0){
                         int dietid = c.getInt(c.getColumnIndex("dietid"));
                         long dt = c.getLong(c.getColumnIndex("dt"));
                         String diettype = c.getString(c.getColumnIndex("diettype"));
-                        aldiet.add(new diet(dietid, diettype, dt));
+                        aldiet.add(new diet(dietid+"", diettype, dt));
                         fetchdietdetailtabledata(dietid);
                     }
                     if (count == 0) {
@@ -281,7 +282,7 @@ if(sd!=0){
                         int dietid = c.getInt(c.getColumnIndex("dietid"));
                         long dt = c.getLong(c.getColumnIndex("dt"));
                         String diettype = c.getString(c.getColumnIndex("diettype"));
-                        aldiet.add(new diet(dietid, diettype, dt));
+                        aldiet.add(new diet(dietid+"", diettype, dt));
                         fetchdietdetailtabledata(dietid);
                     }
                     if (count == 0) {
@@ -315,7 +316,7 @@ if(sd!=0){
                 String nutrient = c.getString(c.getColumnIndex("nutrient"));
                 String unit = c.getString(c.getColumnIndex("unit"));
                 String currenttime = c.getString(c.getColumnIndex("currenttime"));
-                aldietdetail.add(new dietdetail(dietdetailid, dietid, fname, nutrient, unit, quantity, currenttime));
+                aldietdetail.add(new dietdetail(dietdetailid+"", dietid+"", fname, nutrient, unit, quantity, currenttime));
 
             }
             if (count == 0) {
@@ -351,7 +352,7 @@ if(sd!=0){
             n = n.toUpperCase();
             String u = aldietdetail.get(i).unit;
             String fi = aldietdetail.get(i).fname;
-            int dietdetailid = aldietdetail.get(i).dietid;
+            String dietdetailid = aldietdetail.get(i).dietid;
             String currenttime = aldietdetail.get(i).currenttime;
             boolean myflag = false;
             String ddtt = "";
