@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="350dp"
+    android:orientation="vertical"
+    >
+
+
+    <TextView
+        android:gravity="center"
+        android:textColor="#ffa500"
+        android:textSize="30dp"
+        android:text="Update FoodItem Nutrient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="Nutrient"
+        android:layout_width="match_parent"
+        android:textColor="#000000"
+        android:layout_margin="5dp"
+        android:textStyle="bold"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/spn"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:text="Unit :"
+            android:layout_width="wrap_content"
+            android:textColor="#000000"
+            android:layout_marginLeft="5dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:layout_marginLeft="2dp"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:id="@+id/tvun"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:text="Quantity "
+            android:layout_width="wrap_content"
+            android:textColor="#000000"
+            android:layout_margin="2dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:hint="enter calorie per unit"
+            android:inputType="number"
+            android:id="@+id/etq"
+            android:layout_margin="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:orientation="horizontal"
+        android:weightSum="10">
+
+        <Button
+            android:onClick="edit"
+            android:text="Edit"
+            android:textColor="#000000"
+            android:background="#ffffff"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:layout_weight="4"
+
+            android:textSize="25dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"/>
+        <Button
+            android:onClick="cancel"
+            android:text="Cancel"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:background="#ffffff"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+
+            android:textSize="25dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

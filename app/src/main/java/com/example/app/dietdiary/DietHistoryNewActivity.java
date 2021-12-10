@@ -38,6 +38,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.app.mydietdiary.R;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -81,6 +86,13 @@ public class DietHistoryNewActivity extends AppCompatActivity {
     long selecteddate;
     String diettype = "All";
     AlertDialog.Builder ad,ad1;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference mainrefnutrients;
+    DatabaseReference nutrientsref;
+    DatabaseReference mainrefdiet;
+    DatabaseReference dietref;
+    DatabaseReference mainrefdietdetail;
+    DatabaseReference dietdetailref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +107,14 @@ public class DietHistoryNewActivity extends AppCompatActivity {
         rbg = (RadioGroup) (findViewById(R.id.rg1));
         ad = new AlertDialog.Builder(this);
         ad1=new AlertDialog.Builder(this);
+        firebaseDatabase = FirebaseDatabase.getInstance(new firebase_cloud().getLink());
+        mainrefnutrients = firebaseDatabase.getReference();
+        nutrientsref =mainrefnutrients.child("nutrients");
+        mainrefdiet = firebaseDatabase.getReference();
+        dietref =mainrefdiet.child("diet");
+        mainrefdietdetail = firebaseDatabase.getReference();
+        dietdetailref =mainrefdietdetail.child("dietdetail");
+
         String currenttime = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
         rbg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -236,97 +256,215 @@ if(sd!=0){
     }
 
     private void initiallogic() {
-        if (checkForTableExists(db, "nutrients")) {
-            alnutrients.clear();
-            int count = 0;
-            Cursor c = db.rawQuery("select * from nutrients", null);
-            while (c.moveToNext()) {
-                count = count + 1;
-                String nut = c.getString(c.getColumnIndex("nutrient"));
-                String unit = c.getString(c.getColumnIndex("unit"));
-                alnutrients.add(new nutrients(nut, unit));
+        nutrientsref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                alnutrients.clear();
+                //Log.d("MYESSAGE",dataSnapshot.toString());
+                for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                {
+                    nutrients nutrienttemp = singlesnapshot.getValue(nutrients.class);
+                    try {
+                        alnutrients.add(nutrienttemp);
+
+                    }
+                    catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+
+                }
+                myad.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
-            if (count == 0) {
-                //Toast.makeText(getApplicationContext(),"no any nutrient present",Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            // Toast.makeText(getApplicationContext(),"no any nutrient present ",Toast.LENGTH_SHORT).show();
-        }
+        });
+//        if (checkForTableExists(db, "nutrients")) {
+//            alnutrients.clear();
+//            int count = 0;
+//            Cursor c = db.rawQuery("select * from nutrients", null);
+//            while (c.moveToNext()) {
+//                count = count + 1;
+//                String nut = c.getString(c.getColumnIndex("nutrient"));
+//                String unit = c.getString(c.getColumnIndex("unit"));
+//                alnutrients.add(new nutrients(nut, unit));
+//
+//            }
+//            if (count == 0) {
+//                //Toast.makeText(getApplicationContext(),"no any nutrient present",Toast.LENGTH_SHORT).show();
+//            }
+//        } else {
+//            // Toast.makeText(getApplicationContext(),"no any nutrient present ",Toast.LENGTH_SHORT).show();
+//        }
 
     }
 
-    private void fetchdiettabledata(String dtype, long dtt) {
-        if (checkForTableExists(db, "diet")) {
+    private void fetchdiettabledata(final String dtype, final long dtt) {
+       // Toast.makeText(getApplicationContext(),dtype+""+dtt,Toast.LENGTH_SHORT).show();
+       // if (checkForTableExists(db, "diet")) {
             aldiet.clear();
             aldietdetail.clear();
-            int count = 0;
+
             try {
                 if (dtype.equals("All")) {
-                    Cursor c = db.rawQuery("select * from diet where dt=" + dtt + " ", null);
-                    while (c.moveToNext()) {
-                        count = count + 1;
-                        int dietid = c.getInt(c.getColumnIndex("dietid"));
-                        long dt = c.getLong(c.getColumnIndex("dt"));
-                        String diettype = c.getString(c.getColumnIndex("diettype"));
-                        aldiet.add(new diet(dietid+"", diettype, dt));
-                        fetchdietdetailtabledata(dietid);
-                    }
-                    if (count == 0) {
-                        Toast.makeText(getApplicationContext(), "No any diet history found for selected date", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Cursor c = db.rawQuery("select * from diet where dt=" + dtt + " and diettype='" + dtype + "'", null);
-                    while (c.moveToNext()) {
-                        count = count + 1;
-                        int dietid = c.getInt(c.getColumnIndex("dietid"));
-                        long dt = c.getLong(c.getColumnIndex("dt"));
-                        String diettype = c.getString(c.getColumnIndex("diettype"));
-                        aldiet.add(new diet(dietid+"", diettype, dt));
-                        fetchdietdetailtabledata(dietid);
-                    }
-                    if (count == 0) {
-                        tv2.setText("Total Calories :");
-                        Toast.makeText(getApplicationContext(), "No any diet history found for selected  diettype on this date/Misssing not added", Toast.LENGTH_SHORT).show();
+                    dietref.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            int count = 0;
 
-                    }
+                            //Log.d("MYESSAGE",dataSnapshot.toString());
+                            for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                            {
+                               diet diettemp = singlesnapshot.getValue(diet.class);
+
+                                try {
+                                   if(diettemp.date==dtt){
+                                        count = count + 1;
+                                        aldiet.add(diettemp);
+                                       fetchdietdetailtabledata(diettemp.dietid);
+                                    }
+
+
+
+                                }
+                                catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
+
+                            }
+
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+//                    Cursor c = db.rawQuery("select * from diet where dt=" + dtt + " ", null);
+//                    while (c.moveToNext()) {
+//                        count = count + 1;
+//                        int dietid = c.getInt(c.getColumnIndex("dietid"));
+//                        long dt = c.getLong(c.getColumnIndex("dt"));
+//                        String diettype = c.getString(c.getColumnIndex("diettype"));
+//                        aldiet.add(new diet(dietid+"", diettype, dt));
+//                        fetchdietdetailtabledata(dietid);
+//                    }
+//                    if (count == 0) {
+//                        Toast.makeText(getApplicationContext(), "No any diet history found for selected date", Toast.LENGTH_SHORT).show();
+//                    }
+                } else {
+                    dietref.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            int count = 0;
+
+                            //Log.d("MYESSAGE",dataSnapshot.toString());
+                            for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                            {
+                                diet diettemp = singlesnapshot.getValue(diet.class);
+                                try {
+                                    if(dtype.equals(diettemp.diettype)&&diettemp.date==dtt) {
+                                        count = count + 1;
+                                        aldiet.add(diettemp);
+                                        Thread.sleep(2000);
+                                        fetchdietdetailtabledata(diettemp.dietid);
+                                    }
+
+
+                                }
+                                catch (Exception ex){
+                                    ex.printStackTrace();
+                                }
+
+                            }
+                            //fetchdietdetailtabledata("diet09:27:331639026000000");
+
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+//                    Cursor c = db.rawQuery("select * from diet where dt=" + dtt + " and diettype='" + dtype + "'", null);
+//                    while (c.moveToNext()) {
+//                        count = count + 1;
+//                        int dietid = c.getInt(c.getColumnIndex("dietid"));
+//                        long dt = c.getLong(c.getColumnIndex("dt"));
+//                        String diettype = c.getString(c.getColumnIndex("diettype"));
+//                        aldiet.add(new diet(dietid+"", diettype, dt));
+//                        fetchdietdetailtabledata(dietid);
+//                    }
+//                    if (count == 0) {
+//                        tv2.setText("Total Calories :");
+//                        Toast.makeText(getApplicationContext(), "No any diet history found for selected  diettype on this date/Misssing not added", Toast.LENGTH_SHORT).show();
+//
+//                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
 
-        } else {
-            Toast.makeText(getApplicationContext(), "No any diet history found for selected date/Missing not added", Toast.LENGTH_SHORT).show();
-        }
+//        } else {
+//            Toast.makeText(getApplicationContext(), "No any diet history found for selected date/Missing not added", Toast.LENGTH_SHORT).show();
+//        }
 
     }
 
-    private void fetchdietdetailtabledata(int did) {
-        if (checkForTableExists(db, "dietdetail")) {
+    private void fetchdietdetailtabledata(final String did) {
+        dietdetailref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int count = 0;
+                //Log.d("MYESSAGE",dataSnapshot.toString());
+                for(DataSnapshot  singlesnapshot : dataSnapshot.getChildren())
+                {
+                    dietdetail dietdetailtemp = singlesnapshot.getValue(dietdetail.class);
+                    try {
+                        if(did.equals(dietdetailtemp.dietid)) {
+                            count = count + 1;
+                            aldietdetail.add(dietdetailtemp);
+                        }
+                    }
+                    catch (Exception ex){
+                        ex.printStackTrace();
+                    }
 
-            int count = 0;
-            Cursor c = db.rawQuery("select * from dietdetail where dietid=" + did + "", null);
-            while (c.moveToNext()) {
-                count = count + 1;
-                int dietdetailid = c.getInt(c.getColumnIndex("dietdetailid"));
-                int dietid = c.getInt(c.getColumnIndex("dietid"));
-                float quantity = c.getFloat(c.getColumnIndex("quantity"));
-                Log.d("NNNNNNNN", quantity + "");
-                String fname = c.getString(c.getColumnIndex("fname"));
-                String nutrient = c.getString(c.getColumnIndex("nutrient"));
-                String unit = c.getString(c.getColumnIndex("unit"));
-                String currenttime = c.getString(c.getColumnIndex("currenttime"));
-                aldietdetail.add(new dietdetail(dietdetailid+"", dietid+"", fname, nutrient, unit, quantity, currenttime));
+                }
+               // myad.notifyDataSetChanged();
+                Toast.makeText(getApplicationContext(),aldiet.size()+"--"+aldietdetail.size(),Toast.LENGTH_SHORT).show();
+                calculatecalories();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
-            if (count == 0) {
-                tv2.setText("Total Calories :");
-                Toast.makeText(getApplicationContext(), "No any diet history found for selected diettype on this  date/Missing not added", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), "No any diet history found for selected date/Missing not added", Toast.LENGTH_SHORT).show();
-        }
-        calculatecalories();
+        });
+//        if (checkForTableExists(db, "dietdetail")) {
+//
+//            int count = 0;
+//            Cursor c = db.rawQuery("select * from dietdetail where dietid=" + did + "", null);
+//            while (c.moveToNext()) {
+//                count = count + 1;
+//                int dietdetailid = c.getInt(c.getColumnIndex("dietdetailid"));
+//                int dietid = c.getInt(c.getColumnIndex("dietid"));
+//                float quantity = c.getFloat(c.getColumnIndex("quantity"));
+//                Log.d("NNNNNNNN", quantity + "");
+//                String fname = c.getString(c.getColumnIndex("fname"));
+//                String nutrient = c.getString(c.getColumnIndex("nutrient"));
+//                String unit = c.getString(c.getColumnIndex("unit"));
+//                String currenttime = c.getString(c.getColumnIndex("currenttime"));
+//                aldietdetail.add(new dietdetail(dietdetailid+"", dietid+"", fname, nutrient, unit, quantity, currenttime));
+//
+//            }
+//            if (count == 0) {
+//                tv2.setText("Total Calories :");
+//                Toast.makeText(getApplicationContext(), "No any diet history found for selected diettype on this  date/Missing not added", Toast.LENGTH_SHORT).show();
+//            }
+//        } else {
+//            Toast.makeText(getApplicationContext(), "No any diet history found for selected date/Missing not added", Toast.LENGTH_SHORT).show();
+//        }
+
     }
 
 
@@ -362,12 +500,13 @@ if(sd!=0){
 //                    ddtt = c.getString(c.getColumnIndex("diettype"));
 //                    myflag=true;
 //                }
-                for (int x = 0; x < aldiet.size(); x++) {
-                    if (aldietdetail.get(i).dietid == aldiet.get(x).dietid) {
+                for (int x = 0; x < aldiet.size(); x++) {//es nu mai comment kiti code chalan lyi
+                    if (aldietdetail.get(i).dietid.equals(aldiet.get(x).dietid)) {
                         ddtt = aldiet.get(x).diettype;
                         myflag = true;
                     }
                 }
+               // myflag =true;// mai app likhi eh line pehla ni si likhi
                 //Thread.sleep((int)0.90);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -419,7 +558,7 @@ if(sd!=0){
                 boolean flag = true;
                 for (int r = 0; r < al.size(); r++) {
                     String fn = al.get(r).fooditem;
-                    if (fn.equals(fi) && currenttime.equals(al.get(r).currenttime)) {
+                    if (fn.equals(fi) && currenttime.equals(al.get(r).currenttime)) { //es nu mai comment keeta code chaan lyi
                         al.get(r).calories = al.get(r).calories + cal;
                         al.get(r).count = al.get(r).count + 1;
                         flag = false;
@@ -432,6 +571,7 @@ if(sd!=0){
             }
 
         }
+        Toast.makeText(getApplicationContext(),"alsize "+al.size()+" cal total:"+totalcalories,Toast.LENGTH_SHORT).show();
         myad.notifyDataSetChanged();
         tv2.setText("Total Calories :" + totalcalories);
         Date date = new Date(selecteddate);
