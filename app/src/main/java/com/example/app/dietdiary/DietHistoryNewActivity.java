@@ -76,6 +76,7 @@ public class DietHistoryNewActivity extends AppCompatActivity {
     ActionBarDrawerToggle actionBarDrawerToggle;
     TextView tv1;
     TextView tv2;
+    float mtt =0;
     static TextView tvpath;
     ArrayList<nutrients> alnutrients = new ArrayList<>();
     ArrayList<diet> aldiet = new ArrayList<>();
@@ -574,6 +575,7 @@ if(sd!=0){
         Toast.makeText(getApplicationContext(),"alsize "+al.size()+" cal total:"+totalcalories,Toast.LENGTH_SHORT).show();
         myad.notifyDataSetChanged();
         tv2.setText("Total Calories :" + totalcalories);
+        mtt = totalcalories;
         Date date = new Date(selecteddate);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String exactdate = sdf.format(date);
@@ -603,33 +605,33 @@ if(sd!=0){
             }
 
         }
-        else if (item.getItemId() == R.id.m3) {
-            ad.setTitle("Alert");
-            ad.setIcon(R.drawable.ic_launcher_background);
-            ad.setMessage("Do you really want to reset. This action delete all diet data?");
-            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    db.execSQL("DROP TABLE IF EXISTS 'nutrients'");
-                    db.execSQL("DROP TABLE IF EXISTS 'fooditems'");
-                    db.execSQL("DROP TABLE IF EXISTS 'fooditemsdetail'");
-                    db.execSQL("DROP TABLE IF EXISTS 'diet'");
-                    db.execSQL("DROP TABLE IF EXISTS 'dietdetail'");
-                    Toast.makeText(getApplicationContext(), "App Rest Successfully. Add New Data Now.", Toast.LENGTH_LONG).show();
-                    Intent in = new Intent(DietHistoryNewActivity.this, MainActivity.class);
-                    startActivity(in);
-                }
-            });
-            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
-            ad.create();
-            ad.show();
-            //Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show();
-            return true;
-        }
+//        else if (item.getItemId() == R.id.m3) {
+//            ad.setTitle("Alert");
+//            ad.setIcon(R.drawable.ic_launcher_background);
+//            ad.setMessage("Do you really want to reset. This action delete all diet data?");
+//            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    db.execSQL("DROP TABLE IF EXISTS 'nutrients'");
+//                    db.execSQL("DROP TABLE IF EXISTS 'fooditems'");
+//                    db.execSQL("DROP TABLE IF EXISTS 'fooditemsdetail'");
+//                    db.execSQL("DROP TABLE IF EXISTS 'diet'");
+//                    db.execSQL("DROP TABLE IF EXISTS 'dietdetail'");
+//                    Toast.makeText(getApplicationContext(), "App Rest Successfully. Add New Data Now.", Toast.LENGTH_LONG).show();
+//                    Intent in = new Intent(DietHistoryNewActivity.this, MainActivity.class);
+//                    startActivity(in);
+//                }
+//            });
+//            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                }
+//            });
+//            ad.create();
+//            ad.show();
+//            //Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
         else if (item.getItemId() == R.id.m4) {
             Intent in = new Intent(DietHistoryNewActivity.this, HelpActivity.class);
             startActivity(in);
@@ -663,58 +665,58 @@ if(sd!=0){
                 Toast.makeText(getApplicationContext(),"select any diet history first",Toast.LENGTH_SHORT).show();
             }
         }
-        else if (item.getItemId() == R.id.m6) {
-            if(al.size()>0) {
-
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        //Toast.makeText(getApplicationContext(),"permission not granted",Toast.LENGTH_SHORT).show();
-                        // Check Permissions Now
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
-                    } else {
-                        String exactdate = "";
-                        try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                            String date = sdf.format(selecteddate);
-                            Date d1 = sdf.parse(date);
-                            exactdate = sdf.format(d1);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        readExcelFile(getApplicationContext(), "caloriereport" + exactdate + ".xls");
-                    }
-
-            }
-            else{
-                Toast.makeText(getApplicationContext(),"First Add Today's Diet",Toast.LENGTH_SHORT).show();
-            }
-        }
-        else if (item.getItemId() == R.id.m2) {
-            ad.setTitle("Alert");
-            ad.setIcon(R.drawable.ic_launcher_background);
-            ad.setMessage("Do you really want to Delete Overall Diet History. ?");
-            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    db.execSQL("DROP TABLE IF EXISTS 'diet'");
-                    db.execSQL("DROP TABLE IF EXISTS 'dietdetail'");
-                    // Toast.makeText(getApplicationContext(),"Diet History Deleted Successfully.",Toast.LENGTH_LONG).show();
-                    Intent in = new Intent(DietHistoryNewActivity.this, MainActivity.class);
-                    startActivity(in);
-                }
-            });
-            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-            ad.create();
-            ad.show();
-            //Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show();
-            return true;
-        }
+//        else if (item.getItemId() == R.id.m6) {
+//            if(al.size()>0) {
+//
+//                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                            != PackageManager.PERMISSION_GRANTED) {
+//                        //Toast.makeText(getApplicationContext(),"permission not granted",Toast.LENGTH_SHORT).show();
+//                        // Check Permissions Now
+//                        ActivityCompat.requestPermissions(this,
+//                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+//                    } else {
+//                        String exactdate = "";
+//                        try {
+//                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//                            String date = sdf.format(selecteddate);
+//                            Date d1 = sdf.parse(date);
+//                            exactdate = sdf.format(d1);
+//                        } catch (Exception ex) {
+//                            ex.printStackTrace();
+//                        }
+//                        readExcelFile(getApplicationContext(), "caloriereport" + exactdate + ".xls");
+//                    }
+//
+//            }
+//            else{
+//                Toast.makeText(getApplicationContext(),"First Add Today's Diet",Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//        else if (item.getItemId() == R.id.m2) {
+//            ad.setTitle("Alert");
+//            ad.setIcon(R.drawable.ic_launcher_background);
+//            ad.setMessage("Do you really want to Delete Overall Diet History. ?");
+//            ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    db.execSQL("DROP TABLE IF EXISTS 'diet'");
+//                    db.execSQL("DROP TABLE IF EXISTS 'dietdetail'");
+//                    // Toast.makeText(getApplicationContext(),"Diet History Deleted Successfully.",Toast.LENGTH_LONG).show();
+//                    Intent in = new Intent(DietHistoryNewActivity.this, MainActivity.class);
+//                    startActivity(in);
+//                }
+//            });
+//            ad.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//
+//                }
+//            });
+//            ad.create();
+//            ad.show();
+//            //Toast.makeText(this, "Reset", Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
 
         return true;
     }
@@ -947,6 +949,7 @@ tvpath.setText("");
 
     public void seegraph(View view) {
         Intent in = new Intent(DietHistoryNewActivity.this, PieGraphHistoryActivity.class);
+        in.putExtra("mtt",mtt);
         startActivity(in);
     }
 

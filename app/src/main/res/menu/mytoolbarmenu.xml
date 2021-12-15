@@ -23,12 +23,12 @@
         <!--android:orderInCategory="100"-->
         <!--android:title="@string/action_settings"-->
         <!--app:showAsAction="never" />-->
-    <item
-        android:id="@+id/m6"
-        android:icon="@drawable/sh"
-        android:orderInCategory="101"
-        android:title="Share"
-        app:showAsAction="always" />
+<!--    <item-->
+<!--        android:id="@+id/m6"-->
+<!--        android:icon="@drawable/sh"-->
+<!--        android:orderInCategory="101"-->
+<!--        android:title="Share"-->
+<!--        app:showAsAction="always" />-->
     <item
         android:id="@+id/m5"
         android:icon="@drawable/etx"
@@ -40,17 +40,17 @@
         android:orderInCategory="100"
         android:title="Help"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/m2"
-        android:orderInCategory="100"
-        android:title="Delete DietHistory"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/m2"-->
+<!--        android:orderInCategory="100"-->
+<!--        android:title="Delete DietHistory"-->
+<!--        app:showAsAction="never" />-->
 
-    <item
-        android:id="@+id/m3"
-        android:orderInCategory="100"
-        android:title="Reset App"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/m3"-->
+<!--        android:orderInCategory="100"-->
+<!--        android:title="Reset App"-->
+<!--        app:showAsAction="never" />-->
 
 
 

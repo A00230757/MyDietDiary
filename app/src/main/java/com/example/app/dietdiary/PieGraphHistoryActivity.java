@@ -50,6 +50,7 @@ TextView tv1;
     long selecteddate;
     float totalcalories=0;
     boolean flag=false;
+    float mtt =0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +65,8 @@ tv1=(TextView)(findViewById(R.id.tv1)) ;
 setTitle("Diet History");
         db = openOrCreateDatabase("MYDB", MODE_PRIVATE, null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+       mtt= getIntent().getFloatExtra("mtt",0);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, d1, null, 0, 0);
         d1.addDrawerListener(actionBarDrawerToggle);
@@ -461,7 +464,7 @@ this.i=i;
 }
     // If we need to display center text with textStyle
     private SpannableString generateCenterSpannableText(float totalExpense) {
-        SpannableString s = new SpannableString("TOTAL Calories\n "+totalExpense+" cal ");
+        SpannableString s = new SpannableString("TOTAL Calories\n "+mtt+" cal ");
         s.setSpan(new RelativeSizeSpan(2f), 11, s.length(), 0);
         s.setSpan(new StyleSpan(Typeface.NORMAL), 11, s.length(), 0);
         return s;
